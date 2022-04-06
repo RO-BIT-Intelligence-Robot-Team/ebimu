@@ -64,7 +64,7 @@ def talker():
     while not rospy.is_shutdown():
         ser.reset_input_buffer()
 
-        str_temp = ser.readline().decode('utf-8')
+        str_temp = ser.readline()
         comma_cnt = len([m.start() for m in re.finditer(',', str_temp)])
         if (comma_cnt != 9):
             str_list = prev_str
