@@ -50,7 +50,7 @@ def talker():
     rospy.loginfo("imu setup: distance OFF")
     ser.readline()
 
-    ser.write(str.encode('<sor10>')) # set output rate to 10ms = 100hz
+    ser.write(str.encode('<sor10>')) # set output rate to 100ms = 10hz
     rospy.loginfo("imu setup: 100hz output rate")
     ser.readline()
 
@@ -72,9 +72,14 @@ def talker():
         else:
             str_list = str_temp
             prev_str = str_temp
-        
+
+        if type(str_list) is not str :
+            continue
+
+        # print(str_list, type(str_list))
         str_list = str_list.split(',')
         str_list[0] = str_list[0].split('*')[1]
+
         imu_data.header.stamp = rospy.Time.now()
         imu_data.header.frame_id = "base_link"
         # note: EBIMU returns quaternion vector in order of [z, y, x, w]
@@ -84,9 +89,9 @@ def talker():
         imu_data.orientation.x = float(str_list[2])
         imu_data.orientation.w = float(str_list[3])
         imu_data.orientation_covariance = [0.0007, 0, 0, 0, 0.0007, 0, 0, 0, 0.0007]
-        imu_data.linear_acceleration.x = float(str_list[7])
-        imu_data.linear_acceleration.y = float(str_list[8])
-        imu_data.linear_acceleration.z = float(str_list[9])
+        imu_data.linear_acceleration.x = float(str_list[7]) * 9.81
+        imu_data.linear_acceleration.y = float(str_list[8]) * 9.81
+        imu_data.linear_acceleration.z = float(str_list[9]) * 9.81
         imu_data.linear_acceleration_covariance = [0.005, 0, 0, 0, 0.005, 0, 0, 0, 0.005]
         imu_data.angular_velocity.x = math.radians(float(str_list[4]))
         imu_data.angular_velocity.y = math.radians(float(str_list[5]))
