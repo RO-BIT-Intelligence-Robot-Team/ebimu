@@ -1,6 +1,7 @@
 <launch>
   <node pkg="ebimu" type="imu_pub" name="imu_pub">
-    <param name="port" value="/dev/ttyUSB0" />
+    <param name="port" value="/dev/IMU" />
     <param name="baud" value="115200" />
   </node>
+
 </launch>

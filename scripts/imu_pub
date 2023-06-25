@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import math
 import serial
 import rospy
@@ -12,7 +12,7 @@ def talker():
     rospy.loginfo("Starting imu sensor setup...")
 
     # get parameter
-    imu_port = rospy.get_param('~port', '/dev/ttyUSB0') #"""dmesg grep usb : CP210X"""
+    imu_port = rospy.get_param('~port', '/dev/ttyIMU') #"""dmesg grep usb : CP210X"""
     baud = rospy.get_param('~baud', 115200)
     ser = serial.Serial(imu_port, baud)
 
@@ -54,7 +54,7 @@ def talker():
     rospy.loginfo("imu setup: 100hz output rate")
     ser.readline()
 
-    imu_pub = rospy.Publisher("imu_data", Imu, queue_size=5)
+    imu_pub = rospy.Publisher("imu", Imu, queue_size=5)
     base_link_2_base_footprint_tf = tf.TransformBroadcaster()
     rate = rospy.Rate(100) # 100hz
 
@@ -81,7 +81,7 @@ def talker():
         str_list[0] = str_list[0].split('*')[1]
 
         imu_data.header.stamp = rospy.Time.now()
-        imu_data.header.frame_id = "base_link"
+        imu_data.header.frame_id = "imu_link"
         # note: EBIMU returns quaternion vector in order of [z, y, x, w]
         # covariance data estimated from ebimu datasheet
         imu_data.orientation.z = float(str_list[0])
@@ -101,14 +101,15 @@ def talker():
 
         odom_quat = (float(str_list[2]),float(str_list[1]),float(str_list[0]),float(str_list[3]))
         euler = tf.transformations.euler_from_quaternion(odom_quat)
-        odom_quat_reverse_2d = tf.transformations.quaternion_from_euler(-euler[0], euler[1], 0)
-        base_link_2_base_footprint_tf.sendTransform(
-            (0, 0, -0.1),
-            odom_quat_reverse_2d,
-            rospy.Time.now(),
-            "base_footprint",
-            "base_link"
-        )
+        # odom_quat_reverse_2d = tf.transformations.quaternion_from_euler(-euler[0], euler[1], 0)
+        # base_link_2_base_footprint_tf.sendTransform(
+        #     (0, 0, -0.1),
+        #     odom_quat_reverse_2d,
+        #     rospy.Time.now(),
+        #     "base_link",
+        #     "base_footprint"
+            
+        # )
 
         prev_str = str_list
         rate.sleep()
