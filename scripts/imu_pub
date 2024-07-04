@@ -11,7 +11,7 @@ def talker():
     rospy.loginfo("Starting imu sensor setup...")
 
     # 파라미터 가져오기
-    imu_port = rospy.get_param('~port', '/dev/IMU')
+    imu_port = rospy.get_param('~port', '/dev/IMU_LIDAR')
     baud = rospy.get_param('~baud', 115200)
     ser = serial.Serial(imu_port, baud)
 
@@ -45,7 +45,7 @@ def talker():
     rospy.loginfo("imu setup: 100hz output rate")
     ser.readline()
 
-    imu_pub = rospy.Publisher("imu", Imu, queue_size=5)
+    imu_pub = rospy.Publisher("imu/data_raw", Imu, queue_size=5)
     base_link_2_base_footprint_tf = tf.TransformBroadcaster()
     rate = rospy.Rate(100)  # 100hz
 
